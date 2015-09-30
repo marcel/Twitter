@@ -49,6 +49,7 @@ extension API {
     // Geo
     let geo: Geo?
     let place: Place?
+    let coordinates: Geo? // Delete me to fix
 
     static func decode(json: JSON) -> Decoded<Tweet> {
       let basicInfo = curry(self.init)
@@ -79,6 +80,7 @@ extension API {
       let place = replyInfo
         <*> json <|? "geo"
         <*> json <|? "place"
+        <*> json <|? "coordinates" // Delete me to fix
 
       return place
     }

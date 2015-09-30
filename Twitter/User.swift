@@ -28,11 +28,14 @@ extension API {
 
     let createdAtStr: String
     let isVerified: Bool
-    let isProtected: Bool
+    let isProtected: Bool // or comment me out (or any other property) and leave the Delete me line in to fix
 
     // Profile
     let profileBackgroundImageURL: NSURL
     let profileImageThumbnailURL: NSURL
+
+    // Perspectival
+    let isFollowed: Bool // Delete me to fix
 
     var profileImageURL: NSURL {
       let url = profileImageThumbnailURL.absoluteString
@@ -66,14 +69,16 @@ extension API {
       let misc = counts
         <*> json <| "created_at"
         <*> json <| "verified"
-        <*> json <| "protected"
+        <*> json <| "protected" // or comment me out (or any other property) and leave the Delete me line in to fix
 
       let profile = misc
         <*> json <| "profile_background_image_url_https"
         <*> json <| "profile_image_url_https"
+
+      let perspectival = profile
+        <*> json <| "following" // Delete me to fix
       
-      
-      return profile
+      return perspectival
     }
   }
 }
