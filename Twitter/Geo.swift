@@ -24,12 +24,13 @@ extension API {
 
   struct Place: Decodable {
     enum PlaceType: String {
-      case POI  = "poi"
-      case City = "city"
+      case POI   = "poi"
+      case City  = "city"
+      case Admin = "admin" // No idea
     }
 
     let id: String
-    let url: String
+    let url: NSURL
     let type: PlaceType
     let name: String
     let fullName: String

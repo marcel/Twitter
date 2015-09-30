@@ -10,8 +10,35 @@ import Foundation
 import Argo
 import Curry
 
+protocol Entity {}
+
 extension API {
-  typealias Indices = [Int]
+  struct Indices: Decodable {
+    let start: Int
+    let end: Int
+
+    var length: Int {
+      return end - start
+    }
+
+    var asRange: NSRange {
+      return NSMakeRange(start, length)
+    }
+    
+    static func decode(j: JSON) -> Decoded<Indices> {
+      switch j {
+        case let .Array(a):
+          return sequence(a.map(Int.decode)).value.map { ints in
+            if ints.count == 2 {
+              return .Success(Indices(start: ints[0], end: ints[1]))
+            } else {
+              return .typeMismatch("Array", actual: j)
+            }
+          }!
+        default: return .typeMismatch("Array", actual: j)
+      }
+    }
+  }
 
   struct Entities: Decodable {
     let userMentions: [UserMention]?

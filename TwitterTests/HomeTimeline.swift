@@ -10,7 +10,7 @@ import Foundation
 
 extension Fixture {
   struct HomeTimeline {
-    static let tweets = Fixture.loadFromFileNamed("noradio-home-timeline-200-count") as! [NSDictionary]
+    static let tweets = Fixture.loadFromFileNamed("noradio-home-timeline-50-count") as! [NSDictionary]
     static let exampleTweet = tweets[0]
   }
 }

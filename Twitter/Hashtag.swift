@@ -11,14 +11,14 @@ import Argo
 import Curry
 
 extension API {
-  struct Hashtag: Decodable {
+  struct Hashtag: Entity, Decodable {
     let text: String
     let indices: Indices
 
     static func decode(json: JSON) -> Decoded<Hashtag> {
       return curry(self.init)
         <^> json <|  "text"
-        <*> json <|| "indices"
+        <*> json <| "indices"
     }
   }
 }

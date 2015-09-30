@@ -11,7 +11,7 @@ import Argo
 import Curry
 
 extension API {
-  struct Media: Decodable {
+  struct Media: Entity, Decodable {
     enum MediaType: String {
       case Video       = "video"
       case Photo       = "photo"
@@ -23,10 +23,10 @@ extension API {
     let indices: Indices
 
     // URLs
-    let mediaURL: String
-    let url: String
-    let displayURL: String
-    let expandedURL: String
+    let mediaURL: NSURL
+    let url: NSURL
+    let displayURL: NSURL
+    let expandedURL: NSURL
 
     // Sizes
     let sizes: Sizes
@@ -38,7 +38,7 @@ extension API {
       let basicInfo = curry(self.init)
         <^> json <|  "type"
         <*> json <|  "id"
-        <*> json <|| "indices"
+        <*> json <| "indices"
 
       let urls = basicInfo
         <*> json <| "media_url_https"

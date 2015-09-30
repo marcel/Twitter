@@ -31,8 +31,20 @@ extension API {
     let isProtected: Bool
 
     // Profile
-    let profileBackgroundImageURL: String
-    let profileImageURL: String
+    let profileBackgroundImageURL: NSURL
+    let profileImageThumbnailURL: NSURL
+
+    var profileImageURL: NSURL {
+      let url = profileImageThumbnailURL.absoluteString
+      if let range = url.rangeOfString("_normal", options: .BackwardsSearch) {
+        return NSURL(string: url.stringByReplacingCharactersInRange(
+          range,
+          withString: "_bigger"
+        ))!
+      } else {
+        return profileImageThumbnailURL
+      }
+    }
 
     static func decode(json: JSON) -> Decoded<User> {
       let identifiers = curry(self.init)

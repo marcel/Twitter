@@ -11,16 +11,18 @@ import Argo
 import Curry
 
 extension API {
-  struct UserMention: Decodable {
+  struct UserMention: Entity, Decodable {
     let screenName: String
     let name: String
     let id: Int
+    let indices: Indices
 
     static func decode(json: JSON) -> Decoded<UserMention> {
       return curry(self.init)
         <^> json <| "screen_name"
         <*> json <| "name"
         <*> json <| "id"
+        <*> json <| "indices"
     }
   }
 }

@@ -11,8 +11,8 @@ import Argo
 import Curry
 
 extension API {
-  struct URL: Decodable {
-    let url: String
+  struct URL: Entity, Decodable {
+    let url: NSURL
     let expanded: String
     let display: String
     let indices: Indices
@@ -22,7 +22,7 @@ extension API {
         <^> json <|  "url"
         <*> json <|  "expanded_url"
         <*> json <|  "display_url"
-        <*> json <|| "indices"
+        <*> json <| "indices"
     }
   }
 }
