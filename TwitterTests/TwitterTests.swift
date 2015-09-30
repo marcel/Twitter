@@ -7,10 +7,12 @@
 //
 
 import XCTest
+import Argo
 @testable import Twitter
 
 class TwitterTests: XCTestCase {
-    
+    let homeTimeline = Fixture.HomeTimeline.tweets
+
     override func setUp() {
         super.setUp()
         // Put setup code here. This method is called before the invocation of each test method in the class.
@@ -22,15 +24,22 @@ class TwitterTests: XCTestCase {
     }
     
     func testExample() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
+      let firstTweets = homeTimeline.prefix(200)
+      let tweets = firstTweets.map { tweet in
+
+        try! API.Tweet.decode(JSON.parse(tweet)).dematerialize()
+      }
+
+//      } else {
+//        XCTFail("Tweet wasn't parsed")
+//      }
     }
     
-    func testPerformanceExample() {
-        // This is an example of a performance test case.
-        self.measureBlock {
-            // Put the code you want to measure the time of here.
-        }
-    }
-    
+//    func testPerformanceExample() {
+//        // This is an example of a performance test case.
+//        self.measureBlock {
+//            // Put the code you want to measure the time of here.
+//        }
+//    }
+
 }

@@ -1,0 +1,10 @@
+framework module TwitterCore {
+    umbrella header "TwitterCore.h"
+    
+    export *
+    module * { export * }
+
+    link framework "Accounts"
+    link framework "CoreData"
+    link framework "Social"
+}

@@ -17,6 +17,9 @@ DerivedData
 *.ipa
 *.xcuserstate
 
+# Secrets
+*Credentials.plist
+
 # CocoaPods
 #
 # We recommend against adding the Pods directory to your .gitignore. However
@@ -31,3 +34,5 @@ DerivedData
 # Carthage/Checkouts
 
 Carthage/Build
+
+Twitter/Credentials.plist
