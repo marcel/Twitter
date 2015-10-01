@@ -36,7 +36,8 @@ class HomeTimelineViewController: UIViewController, UITableViewDelegate, UITable
     super.viewDidLoad()
     tableView.rowHeight = UITableViewAutomaticDimension
     tableView.estimatedRowHeight = 120
-    let titleView = UIImageView(image: UIImage(named: "blue-bird.png"))
+    let titleView = UIImageView(image: UIImage(named: "logo-white.png"))
+    titleView.tintColor = UIColor.twitterBlueColor()
     let navigationBarHeight = navigationController?.navigationBar.frame.size.height
     let titleViewIconDimention = (navigationBarHeight ?? 44) * 0.75
     titleView.frame = CGRectMake(0, 0, titleViewIconDimention, titleViewIconDimention)
