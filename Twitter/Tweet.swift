@@ -14,7 +14,12 @@ extension API {
   struct Tweet: Decodable {
     let id: Int
     let text: String
-    let createdAtStr: String // NSDate isn't Decodable yet
+    let createdAtStr: String // NSDate isn't Decodable
+
+    var createdAt: NSDate {
+      return API.dateFromString(createdAtStr)!
+    }
+
     let user: User
 
     // Optionals
