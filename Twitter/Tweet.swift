@@ -51,6 +51,10 @@ extension API {
     let inReplyToUserId: Int?
     let inReplyToScreenName: String?
 
+    var isReply: Bool {
+      return inReplyToTweetId != nil
+    }
+
     // Geo
     let geo: Geo?
     let place: Place?

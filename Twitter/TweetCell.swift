@@ -24,10 +24,14 @@ class TweetTextLabel: UILabel {
 class TweetCell: UITableViewCell {
   static let identifier = "TweetCell"
 
+  @IBOutlet weak var originContextView: TweetOriginContextView!
+
   var tweet: API.Tweet! {
     didSet {
       userIconImageView.image = nil
 
+      originContextView.tweet = tweet
+      
       let primaryTweet = tweet.isRetweet ? tweet.retweetedTweet! : tweet
       let formatter = Formatter(tweet: primaryTweet)
       timeSinceTweetCreation.text = formatter.timeSinceCreationInWords()
