@@ -8,6 +8,7 @@
 
 import UIKit
 import TwitterKit
+import enum Argo.JSON
 
 class LoginViewController: UIViewController {
 
@@ -17,6 +18,10 @@ class LoginViewController: UIViewController {
     let logInButton = TWTRLogInButton { session, error in
       if let session = session {
         print("signed in as \(session.userName)")
+        self.establishSession(session) { user in
+          Session.setCurrentSession(user)
+          self.dismissViewControllerAnimated(true, completion: nil)
+        }
       } else {
         print("error: \(error!.localizedDescription)")
       }
@@ -25,6 +30,36 @@ class LoginViewController: UIViewController {
     logInButton.center = view.center
     view.addSubview(logInButton)
   }
+
+  func establishSession(session: TWTRSession, completion: (API.User -> ())?) {
+    let client = TWTRAPIClient(userID: session.userID)
+    let userShowEndpoint = "https://api.twitter.com/1.1/users/show.json"
+
+    let userShowRequest = client.URLRequestWithMethod(
+      "GET",
+      URL: userShowEndpoint,
+      parameters: ["user_id": String(session.userID)],
+      error: nil
+    )
+
+    client.sendTwitterRequest(userShowRequest) { (response, data, connectionError) in
+
+      if (connectionError == nil) {
+        let json  = JSON.parse(
+          try! NSJSONSerialization.JSONObjectWithData(data!, options: [])
+        )
+
+        API.User.decode(json).map { user in
+          completion?(user)
+        }
+
+      } else {
+        print("Couldn't load authenticated user")
+      }
+    }
+  }
+
+
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
