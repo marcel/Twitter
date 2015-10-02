@@ -26,6 +26,14 @@ extension API {
     let entities: Entities?
     let extendedEntities: ExtendedEntities?
 
+    var hasInlineImage: Bool {
+      return extendedEntities.flatMap { entities in
+        entities.media.first.map {
+          $0.type == API.Media.MediaType.Photo
+        }
+      } ?? false
+    }
+
     // Retweet
     let retweetedTweetJSON: JSON? // Recursive reference needs to be parsed lazily
     

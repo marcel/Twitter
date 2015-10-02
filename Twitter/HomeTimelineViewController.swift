@@ -25,24 +25,28 @@ struct HomeTimeline {
   }
 }
 
-class HomeTimelineViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class HomeTimelineViewController: UIViewController,
+  UITableViewDelegate, UITableViewDataSource,
+  TweetComposeViewControllerDelegate {
 
   @IBOutlet weak var tableView: UITableView!
 
 //  var tweets: [API.Tweet] = [] // TODO Make Timeline struct
-  var tweets = HomeTimeline.tweets
+  var tweets: [API.Tweet] = []
 
   override func viewDidLoad() {
     super.viewDidLoad()
     tableView.rowHeight = UITableViewAutomaticDimension
-    tableView.estimatedRowHeight = 120
-    let titleView = UIImageView(image: UIImage(named: "logo-white.png"))
+
+    let titleView = UIImageView(image: UIImage(named: "blue-bird.png"))
     titleView.tintColor = UIColor.twitterBlueColor()
     let navigationBarHeight = navigationController?.navigationBar.frame.size.height
     let titleViewIconDimention = (navigationBarHeight ?? 44) * 0.75
     titleView.frame = CGRectMake(0, 0, titleViewIconDimention, titleViewIconDimention)
     titleView.contentMode = UIViewContentMode.ScaleAspectFill
     navigationItem.titleView = titleView
+    tableView.estimatedRowHeight = 200
+
 //    let store = Twitter.sharedInstance().sessionStore
 //
 //    if let userID = store.session()?.userID {
@@ -82,7 +86,12 @@ class HomeTimelineViewController: UIViewController, UITableViewDelegate, UITable
 //      }
 //    }
 
-//    presentViewController(LoginViewController(), animated: true, completion: .None)
+    if let session = Session.currentSession {
+      tweets = HomeTimeline.tweets
+      reloadData()
+    } else {
+      presentViewController(LoginViewController(), animated: true, completion: .None)
+    }
   }
 
   func reloadData() {
@@ -98,6 +107,7 @@ class HomeTimelineViewController: UIViewController, UITableViewDelegate, UITable
   }
 
   func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+
     let cell = tableView.dequeueReusableCellWithIdentifier(
       TweetCell.identifier,
       forIndexPath: indexPath
@@ -108,14 +118,27 @@ class HomeTimelineViewController: UIViewController, UITableViewDelegate, UITable
     return cell
   }
 
-  /*
-  // MARK: - Navigation
-
-  // In a storyboard-based application, you will often want to do a little preparation before navigation
-  override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-      // Get the new view controller using segue.destinationViewController.
-      // Pass the selected object to the new view controller.
+  enum Segue: String {
+    case HomeTimelineToTweetCompose
   }
-  */
 
+  override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    switch segue.identifier {
+    case .Some(Segue.HomeTimelineToTweetCompose.rawValue):
+      print("Segueing to tweet compose")
+      let tweetComposeViewController = segue.destinationViewController as! TweetComposeViewController
+      tweetComposeViewController.delegate = self
+    default:
+      ()
+    }
+  }
+
+  // MARK: - TweetComposeViewControllerDelegate
+
+  func tweetComposeController(
+    composeController: TweetComposeViewController,
+    didCreateTweet tweet: API.Tweet
+  ) {
+    print("Tweet was created", tweet)
+  }
 }

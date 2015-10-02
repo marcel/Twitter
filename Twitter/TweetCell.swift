@@ -25,16 +25,20 @@ class TweetCell: UITableViewCell {
   static let identifier = "TweetCell"
 
   @IBOutlet weak var originContextView: TweetOriginContextView!
+  @IBOutlet weak var inlineImageView: UIImageView!
+  @IBOutlet weak var inlineImageHeight: NSLayoutConstraint!
 
   var tweet: API.Tweet! {
     didSet {
       userIconImageView.image = nil
 
       originContextView.tweet = tweet
-      
+
       let primaryTweet = tweet.isRetweet ? tweet.retweetedTweet! : tweet
       let formatter = Formatter(tweet: primaryTweet)
       timeSinceTweetCreation.text = formatter.timeSinceCreationInWords()
+
+      setInlineImage(primaryTweet)
 
       let tweetText = NSMutableAttributedString(string: primaryTweet.text.stringByRemovingPercentEncoding!)
 
@@ -65,13 +69,6 @@ class TweetCell: UITableViewCell {
           }
         }
       }
-//      primaryTweet.entities.map { entities in
-//        entities.hashtags.flatMap { hashTag in
-//        }
-//      }
-//      [string addAttribute:NSForegroundColorAttributeName value:[UIColor redColor] range:NSMakeRange(0,5)];
-//      [string addAttribute:NSForegroundColorAttributeName value:[UIColor greenColor] range:NSMakeRange(5,6)];
-//      [string addAttribute:NSForegroundColorAttributeName value:[UIColor blueColor] range:NSMakeRange(11,5)];
 
       tweetTextLabel.attributedText = tweetText
       userNameLabel.text = primaryTweet.user.name
@@ -121,10 +118,25 @@ class TweetCell: UITableViewCell {
     super.setSelected(selected, animated: animated)
   }
 
+  func setInlineImage(tweet: API.Tweet) {
+    if tweet.hasInlineImage {
+      inlineImageHeight.constant = 172
+      inlineImageView.hidden = false
+      let mediaURL = tweet.extendedEntities!.media[0].mediaURL
+      print("Inline image at url: \(mediaURL.absoluteString)")
+      inlineImageView.setImageWithURL(mediaURL)
+      // TODO Remove URL from tweet text
+    } else {
+      inlineImageHeight.constant = 0
+      inlineImageView.hidden = true
+    }
+  }
 
   func configureStyles() {
     let iconLayer = userIconImageView.layer
     iconLayer.cornerRadius = 5
+    inlineImageView.layer.cornerRadius = 5
+    inlineImageView.layer.masksToBounds = true
   }
 
   struct Formatter {
