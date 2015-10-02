@@ -58,7 +58,17 @@ class TweetComposeViewController: UIViewController, UITextViewDelegate {
     controlView.layer.borderColor = UIColor.grayColor().CGColor
     controlView.layer.borderWidth = 0.25
 
-    tweetButton.enabled = tweetButtonShouldBeEnabled()
+    updateTweetButtonState()
+  }
+
+  func updateTweetButtonState() {
+    if tweetButtonShouldBeEnabled() {
+      tweetButton.enabled = true
+      tweetButton.alpha = 1
+    } else {
+      tweetButton.enabled = false
+      tweetButton.alpha = 0.5
+    }
   }
 
   func registerKeyboardNotification() {
@@ -70,9 +80,8 @@ class TweetComposeViewController: UIViewController, UITextViewDelegate {
     )
   }
 
-  func keyboardWasShown(aNotification: NSNotification) {
-    let info = aNotification.userInfo!
-    print("Current control view frame: \(controlView.frame)")
+  func keyboardWasShown(notification: NSNotification) {
+    let info = notification.userInfo!
     if let keyboardSize = (info[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.CGRectValue() {
       distanceOfControlViewToBottom.constant = keyboardSize.height
 
@@ -106,7 +115,7 @@ class TweetComposeViewController: UIViewController, UITextViewDelegate {
 
     typingHasOccurred = true
 
-    tweetButton.enabled = tweetButtonShouldBeEnabled()
+    updateTweetButtonState()
     updateCharacterCounter()
 
     prohibitExceedingCharacterLimit()
