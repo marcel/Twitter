@@ -42,6 +42,11 @@ extension API {
         try! Tweet.decode($0).dematerialize()
       }
     }
+
+    var primaryTweet: Tweet {
+      return isRetweet ? retweetedTweet! : self
+    }
+
   
     var isRetweet: Bool {
       return retweetedTweetJSON != nil

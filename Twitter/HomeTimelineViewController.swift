@@ -86,12 +86,13 @@ class HomeTimelineViewController: UIViewController,
 //      }
 //    }
 
-    if let session = Session.currentSession {
+//    if let session = Session.currentSession {
       tweets = HomeTimeline.tweets
       reloadData()
-    } else {
-      presentViewController(LoginViewController(), animated: true, completion: .None)
-    }
+//    } else {
+//      presentViewController(LoginViewController(), animated: true, completion: .None)
+//    }
+
   }
 
   func reloadData() {
@@ -120,14 +121,25 @@ class HomeTimelineViewController: UIViewController,
 
   enum Segue: String {
     case HomeTimelineToTweetCompose
+    case TimelineToTweetDetail
   }
 
   override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    print("segue", segue)
     switch segue.identifier {
     case .Some(Segue.HomeTimelineToTweetCompose.rawValue):
       print("Segueing to tweet compose")
       let tweetComposeViewController = segue.destinationViewController as! TweetComposeViewController
       tweetComposeViewController.delegate = self
+    case .Some(Segue.TimelineToTweetDetail.rawValue):
+      print("Segueing to tweet detail view")
+      let tapRecognizer = sender as! UITapGestureRecognizer
+      let tapPoint      = tapRecognizer.locationInView(tableView)
+      let indexPath     = tableView.indexPathForRowAtPoint(tapPoint)!
+      let tappedTweet   = tweets[indexPath.row]
+      let tweetDetailViewController = segue.destinationViewController as! TweetDetailViewController
+
+      tweetDetailViewController.tweet = tappedTweet
     default:
       ()
     }

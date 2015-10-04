@@ -24,13 +24,13 @@ PODS:
   - BDBOAuth1Manager (1.5.0):
     - AFNetworking/NSURLConnection (~> 2.5.0)
     - AFNetworking/NSURLSession (~> 2.5.0)
-  - Crashlytics (3.3.1)
+  - Crashlytics (3.3.3)
   - Curry (1.2.0)
-  - Fabric (1.5.1):
-    - Fabric/Base (= 1.5.1)
-  - Fabric/Base (1.5.1)
-  - TwitterCore (1.11.2)
-  - TwitterKit (1.11.2)
+  - Fabric (1.5.4):
+    - Fabric/Base (= 1.5.4)
+  - Fabric/Base (1.5.4)
+  - TwitterCore (1.11.3)
+  - TwitterKit (1.11.3)
 
 DEPENDENCIES:
   - AFNetworking
@@ -46,10 +46,10 @@ SPEC CHECKSUMS:
   AFNetworking: 05edc0ac4c4c8cf57bcf4b84be5b0744b6d8e71e
   Argo: 43133aa1612b249bbadd24aca94605aa0f13690d
   BDBOAuth1Manager: 2e28773b58f880fb36b5cd3efcf0b1fefbc78a99
-  Crashlytics: 0e61bdda9def51f1e99720f804eebe94865442b2
+  Crashlytics: 9120a5c1515655e57a65e565e2eae8dd326be2e9
   Curry: d0bd819af242d78cf068e1e9e914ae9f476e84ed
-  Fabric: 03c3b3fe77e11a2bc31421b989a9c7adaa4779a5
-  TwitterCore: 79a35ada3dfb88d371b990d2ef62d72acde3ea7c
-  TwitterKit: 4390d4a31c46823883a9bcd1e34ec3694333dfe7
+  Fabric: 93e3053474839d8df33a61a29c328a48c83792c8
+  TwitterCore: ac822b826d021c483569d3d0588645dfa543bee9
+  TwitterKit: 8900e0032610749cebb37a9950f40fd1da606587
 
 COCOAPODS: 0.38.2
