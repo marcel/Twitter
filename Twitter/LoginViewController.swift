@@ -10,7 +10,12 @@ import UIKit
 import TwitterKit
 import enum Argo.JSON
 
+protocol LoginViewControllerDelegate {
+  func loginController(loginController: LoginViewController, didLogInUser user: API.User)
+}
+
 class LoginViewController: UIViewController {
+  var delegate: LoginViewControllerDelegate?
 
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -19,7 +24,7 @@ class LoginViewController: UIViewController {
       if let session = session {
         print("signed in as \(session.userName)")
         self.establishSession(session) { user in
-          Session.setCurrentSession(user)
+          self.delegate?.loginController(self, didLogInUser: user)
           self.dismissViewControllerAnimated(true, completion: nil)
         }
       } else {
@@ -49,7 +54,9 @@ class LoginViewController: UIViewController {
           try! NSJSONSerialization.JSONObjectWithData(data!, options: [])
         )
 
+
         API.User.decode(json).map { user in
+          Session.setCurrentSession(user, payload: data!)
           completion?(user)
         }
 

@@ -42,7 +42,7 @@ class TweetComposeViewController: UIViewController, UITextViewDelegate {
   
   override func viewDidLoad() {
     super.viewDidLoad()
-    if let authorIconURL = Session.currentSession?.user?.profileImageThumbnailURL {
+    if let authorIconURL = Session.currentSession?.user.profileImageThumbnailURL {
       authorIconView.setImageWithURL(authorIconURL)
     }
     registerKeyboardNotification()

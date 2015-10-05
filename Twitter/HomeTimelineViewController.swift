@@ -10,32 +10,20 @@ import UIKit
 import TwitterKit
 import Argo
 
-struct Fixture {
-  static func loadFromFileNamed(name: String) -> [NSDictionary] {
-    let filePath     = NSBundle.mainBundle().pathForResource(name, ofType: "json")!
-    let data         = NSData(contentsOfFile: filePath)!
-
-    return try! NSJSONSerialization.JSONObjectWithData(data, options: []) as! [NSDictionary]
-  }
-}
-
-struct HomeTimeline {
-  static let tweets = Fixture.loadFromFileNamed("noradio-home-timeline-50-count").map {
-    return try! API.Tweet.decode(JSON.parse($0)).dematerialize()
-  }
-}
-
 class HomeTimelineViewController: UIViewController,
   UITableViewDelegate, UITableViewDataSource,
-  TweetComposeViewControllerDelegate {
+  TweetComposeViewControllerDelegate,
+  LoginViewControllerDelegate {
 
   @IBOutlet weak var tableView: UITableView!
 
-//  var tweets: [API.Tweet] = [] // TODO Make Timeline struct
   var tweets: [API.Tweet] = []
+  var client: TWTRAPIClient!
+  var loginViewController = LoginViewController()
 
   override func viewDidLoad() {
     super.viewDidLoad()
+    loginViewController.delegate = self
     tableView.rowHeight = UITableViewAutomaticDimension
 
     let titleView = UIImageView(image: UIImage(named: "blue-bird.png"))
@@ -47,56 +35,50 @@ class HomeTimelineViewController: UIViewController,
     navigationItem.titleView = titleView
     tableView.estimatedRowHeight = 200
 
-//    let store = Twitter.sharedInstance().sessionStore
-//
-//    if let userID = store.session()?.userID {
-//      let client = TWTRAPIClient(userID: userID)
-//      debugPrint("userId", userID)
-//      let statusesShowEndpoint = "https://api.twitter.com/1.1/statuses/home_timeline.json"
-//      var clientError : NSError?
-//
-//      let rateLimitUrl = "https://api.twitter.com/1.1/application/rate_limit_status.json"
-//      let rateLimitRequest = client.URLRequestWithMethod("GET", URL: rateLimitUrl, parameters: ["resources":"statuses"], error: nil)
-//      client.sendTwitterRequest(rateLimitRequest) { (response, data, connectionError) -> Void in
-//        if (connectionError == nil) {
-//          let json  = try! NSJSONSerialization.JSONObjectWithData(data!, options: []) as! NSDictionary
-//          print("Rate limit info: ")
-//          debugPrint(json)
-//        } else {
-//          print("Rate limit request failed: \(connectionError)")
-//        }
-//      }
-//
-//      let request = client.URLRequestWithMethod("GET", URL: statusesShowEndpoint, parameters: [:], error: &clientError)
-//
-//      client.sendTwitterRequest(request) { (response, data, connectionError) -> Void in
-//        if (connectionError == nil) {
-//          let json  = try! NSJSONSerialization.JSONObjectWithData(data!, options: []) as! [NSDictionary]
-//          self.tweets = json.map { tweetJson in
-//            let imageUrl = tweetJson.valueForKeyPath("user.profile_image_url_https") as! String
-//            let tweetText = tweetJson["text"] as! String
-//
-//            return Tweete(text: tweetText, userIconURL: NSURL(string: imageUrl)!)
-//          }
-//          self.reloadData()
-////          debugPrint(json)
-//        } else {
-//          print("Error: \(connectionError)")
-//        }
-//      }
-//    }
+    let store = Twitter.sharedInstance().sessionStore
 
-//    if let session = Session.currentSession {
-      tweets = HomeTimeline.tweets
-      reloadData()
-//    } else {
-//      presentViewController(LoginViewController(), animated: true, completion: .None)
-//    }
+    if let userID = store.session()?.userID {
+      if let _ = Session.loadFromUserId(Int(userID)!) {
+        client = TWTRAPIClient(userID: userID)
+        loadHometimeline()
+      } else {
+        attemptLogin()
+      }
+    } else {
+      attemptLogin()
+    }
+  }
 
+  func loadHometimeline() {
+    let statusesShowEndpoint = "https://api.twitter.com/1.1/statuses/home_timeline.json"
+    var clientError: NSError?
+    let request = client.URLRequestWithMethod("GET", URL: statusesShowEndpoint, parameters: [:], error: &clientError)
+
+    client.sendTwitterRequest(request) { (response, data, connectionError) -> Void in
+      if (connectionError == nil) {
+        let json  = try! NSJSONSerialization.JSONObjectWithData(data!, options: []) as! [NSDictionary]
+        self.tweets = json.flatMap { tweetJson in
+          return try? API.Tweet.decode(JSON.parse(tweetJson)).dematerialize()
+        }
+        self.reloadData()
+        debugPrint(json)
+      } else {
+        print("Error: \(connectionError)")
+      }
+    }
   }
 
   func reloadData() {
     tableView.reloadData()
+  }
+
+  func attemptLogin() {
+    presentViewController(loginViewController, animated: true, completion: .None)
+  }
+
+  func loginController(loginController: LoginViewController, didLogInUser user: API.User) {
+    client = TWTRAPIClient(userID: String(user.id))
+    loadHometimeline()
   }
 
   override func didReceiveMemoryWarning() {
@@ -152,5 +134,20 @@ class HomeTimelineViewController: UIViewController,
     didCreateTweet tweet: API.Tweet
   ) {
     print("Tweet was created", tweet)
+  }
+}
+
+struct Fixture {
+  static func loadFromFileNamed(name: String) -> [NSDictionary] {
+    let filePath     = NSBundle.mainBundle().pathForResource(name, ofType: "json")!
+    let data         = NSData(contentsOfFile: filePath)!
+
+    return try! NSJSONSerialization.JSONObjectWithData(data, options: []) as! [NSDictionary]
+  }
+}
+
+struct HomeTimeline {
+  static let tweets = Fixture.loadFromFileNamed("noradio-home-timeline-50-count").map {
+    return try! API.Tweet.decode(JSON.parse($0)).dematerialize()
   }
 }
