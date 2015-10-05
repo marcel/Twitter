@@ -11,6 +11,14 @@ import UIKit
 class TweetDetailView: UIView {
   var tweet: API.Tweet! {
     didSet {
+      let formatter = Formatter(tweet: tweet)
+
+      activityCountsView.layer.borderColor = UIColor.grayColor().CGColor
+      activityCountsView.layer.borderWidth = 0.25
+
+      engagementActionButtonsView.layer.borderColor = UIColor.grayColor().CGColor
+      engagementActionButtonsView.layer.borderWidth = 0.25
+
       authorIconView.layer.cornerRadius = 5
       authorIconView.layer.masksToBounds = true
       let user = tweet.user
@@ -20,7 +28,7 @@ class TweetDetailView: UIView {
 
       tweetTextLabel.text = tweet.text
 
-      timestampLabel.text = "Timestamp goes here"
+      timestampLabel.text = formatter.timestamp
       replyTextField.text = "Reply to \(user.name)"
     }
   }
@@ -40,4 +48,17 @@ class TweetDetailView: UIView {
   @IBOutlet weak var replyContainerView: UIView!
   @IBOutlet weak var replyTextField: UITextField!
 
+  struct Formatter {
+    let tweet: API.Tweet
+
+    static let dateFormatter: NSDateFormatter = {
+      let formatter = NSDateFormatter()
+      formatter.dateFormat = "MM/dd/yy h:mm a"
+      return formatter
+    }()
+
+    var timestamp: String {
+      return Formatter.dateFormatter.stringFromDate(tweet.createdAt)
+    }
+  }
 }

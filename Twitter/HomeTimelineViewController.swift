@@ -20,9 +20,11 @@ class HomeTimelineViewController: UIViewController,
   var tweets: [API.Tweet] = []
   var client: TWTRAPIClient!
   var loginViewController = LoginViewController()
+  var refreshControl: UIRefreshControl!
 
   override func viewDidLoad() {
     super.viewDidLoad()
+    prepareRefreshControl()
     loginViewController.delegate = self
     tableView.rowHeight = UITableViewAutomaticDimension
 
@@ -49,7 +51,7 @@ class HomeTimelineViewController: UIViewController,
     }
   }
 
-  func loadHometimeline() {
+  func loadHometimeline(completion: (() -> ())? = .None) {
     let statusesShowEndpoint = "https://api.twitter.com/1.1/statuses/home_timeline.json"
     var clientError: NSError?
     let request = client.URLRequestWithMethod("GET", URL: statusesShowEndpoint, parameters: [:], error: &clientError)
@@ -61,6 +63,7 @@ class HomeTimelineViewController: UIViewController,
           return try? API.Tweet.decode(JSON.parse(tweetJson)).dematerialize()
         }
         self.reloadData()
+        completion?()
         debugPrint(json)
       } else {
         print("Error: \(connectionError)")
@@ -124,6 +127,23 @@ class HomeTimelineViewController: UIViewController,
       tweetDetailViewController.tweet = tappedTweet
     default:
       ()
+    }
+  }
+
+  private func prepareRefreshControl() {
+    refreshControl = UIRefreshControl()
+
+    refreshControl.addTarget(self,
+      action: "onRefresh",
+      forControlEvents: UIControlEvents.ValueChanged
+    )
+
+    tableView.insertSubview(refreshControl, atIndex: 0)
+  }
+
+  func onRefresh() {
+    loadHometimeline() {
+      self.refreshControl.endRefreshing()
     }
   }
 
