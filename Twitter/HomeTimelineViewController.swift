@@ -15,6 +15,7 @@ class HomeTimelineViewController: UIViewController,
   TweetComposeViewControllerDelegate,
   LoginViewControllerDelegate {
 
+  @IBOutlet var menuDrawerSwipRecognizer: UISwipeGestureRecognizer!
   @IBOutlet weak var tableView: UITableView!
 
   var tweets: [API.Tweet] = []
@@ -107,6 +108,7 @@ class HomeTimelineViewController: UIViewController,
   enum Segue: String {
     case HomeTimelineToTweetCompose
     case TimelineToTweetDetail
+    case TimelineToProfile
   }
 
   override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
@@ -125,9 +127,22 @@ class HomeTimelineViewController: UIViewController,
       let tweetDetailViewController = segue.destinationViewController as! TweetDetailViewController
 
       tweetDetailViewController.tweet = tappedTweet
+    case .Some(Segue.TimelineToProfile.rawValue):
+      let tapRecognizer = sender as! UITapGestureRecognizer
+      let tapPoint      = tapRecognizer.locationInView(tableView)
+      let indexPath     = tableView.indexPathForRowAtPoint(tapPoint)!
+      let tappedTweet   = tweets[indexPath.row]
+      let profileViewController = segue.destinationViewController as! ProfileViewController
+      profileViewController.user = tappedTweet.user
+      profileViewController.client = client
     default:
       ()
     }
+  }
+
+  @IBAction func userIconTapped(sender: AnyObject) {
+    print("Segue timeline to profile")
+    performSegueWithIdentifier("TimelineToProfile", sender: sender)
   }
 
   private func prepareRefreshControl() {
@@ -145,6 +160,11 @@ class HomeTimelineViewController: UIViewController,
     loadHometimeline() {
       self.refreshControl.endRefreshing()
     }
+  }
+
+  @IBAction func swipingForMenuDrawer(sender: UISwipeGestureRecognizer) {
+    print("swiping for menu drawer")
+    performSegueWithIdentifier("MenuDrawerSegue", sender: self)
   }
 
   // MARK: - TweetComposeViewControllerDelegate
